@@ -20,9 +20,9 @@ Route::get('/dashboard', function () {
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 
-// Route::get('/users', function () {
-//     return view('users');
-// })->middleware(['auth', 'verified'])->name('users');
+Route::get('/users', function () {
+    return view('users');
+})->middleware(['auth', 'verified'])->name('users');
 
 
 
@@ -31,6 +31,11 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
+// Route::middleware(['auth', 'verified'])->group(function () {
+//     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+//     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+//     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+// });
 
 Route::get('/', function () {
     $departments = DB::select('select * from departments');
@@ -61,9 +66,9 @@ Route::post('/email/verification-notification', function (Request $request) {
 })->middleware(['auth', 'throttle:6,1'])->name('verification.send');
 
 
-Route::get('/profile', function () {
-    // Only verified users may access this route...
-})->middleware(['auth', 'verified']);
+// Route::get('/profile', function () {
+//     // Only verified users may access this route...
+// })->middleware(['auth', 'verified']);
 
 
 
@@ -81,8 +86,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
 // Users page
 // Route::get('/users', [UserController::class, 'index'])->middleware(['auth', 'verified'])->name('users');
-Route::get('/users', [UserController::class, 'index'])->middleware(['auth', 'verified'])->name('users');
-
+// Route::get('/users', [UserController::class, 'index'])->middleware(['auth', 'verified'])->name('users');
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::get('/users', [UserController::class, 'index'])->name('users');
+    Route::post('/users/assign-role/{user}', [UserController::class, 'assignRole'])->name('users.assignRole');
+});
 
 
 

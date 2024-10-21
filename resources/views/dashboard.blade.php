@@ -15,15 +15,15 @@
                     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                         <div class="bg-blue-500 text-white p-4 rounded-lg shadow transition-transform transform hover:scale-105 hover:shadow-lg animate__animated animate__zoomIn">
                             <h3 class="font-bold text-lg">Total Tickets</h3>
-                            <p class="text-2xl">45</p> <!-- Replace with dynamic data -->
+                            <p class="text-2xl">45</p> 
                         </div>
                         <div class="bg-green-500 text-white p-4 rounded-lg shadow transition-transform transform hover:scale-105 hover:shadow-lg animate__animated animate__zoomIn">
                             <h3 class="font-bold text-lg">Open Tickets</h3>
-                            <p class="text-2xl">23</p> <!-- Replace with dynamic data -->
+                            <p class="text-2xl">23</p> 
                         </div>
                         <div class="bg-yellow-500 text-white p-4 rounded-lg shadow transition-transform transform hover:scale-105 hover:shadow-lg animate__animated animate__zoomIn">
                             <h3 class="font-bold text-lg">Resolved Tickets</h3>
-                            <p class="text-2xl">12</p> <!-- Replace with dynamic data -->
+                            <p class="text-2xl">12</p> 
                         </div>
                     </div>
 
