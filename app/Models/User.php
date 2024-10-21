@@ -62,6 +62,14 @@ public function department()
     return $this->belongsTo(Department::class);
 }
 
+protected static function booted()
+    {
+        static::created(function ($user) {
+            // Assign the default role of "User" to every new user
+            $user->assignRole('User');
+        });
+    }
+
 
     // protected function password(): Attribute
     // {
