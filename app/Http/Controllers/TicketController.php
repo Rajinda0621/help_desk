@@ -130,7 +130,7 @@ class TicketController extends Controller
             $contents = file_get_contents($request->file('attachment'));
             $filename = Str::random(25);
             $path     = "attachments/$filename.$ext";
-            dd($path);
+            // dd($path);
             Storage::disk('public')->put($path, $contents);
             $ticket->update(['attachment' => $path]);
     }

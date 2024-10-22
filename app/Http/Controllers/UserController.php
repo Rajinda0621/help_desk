@@ -4,33 +4,33 @@
 
 namespace App\Http\Controllers;
 
-// use App\Models\User;
-// use Illuminate\Http\Request;
 
-// class UserController extends Controller
-// {
-//     public function index() {
-//         $users = User::with(['roles', 'department'])->paginate(10); 
-//         return view('users', compact('users'));
-//     }
-// }
-
-// User assign test 01
 
 use App\Models\User;
 use Illuminate\Http\Request;
 use Spatie\Permission\Models\Role;
 
 
+
 class UserController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        // Get all users with their roles
-        $users = User::with('roles')->get();
+        // Get the search input
+        $search = $request->input('search');
 
-        // Pass users to the view
-        return view('users', compact('users'));
+        // Query users by name or role based on the search input
+        $users = User::with('roles')
+            ->when($search, function ($query, $search) {
+                $query->where('name', 'like', "%{$search}%")
+                      ->orWhereHas('roles', function ($query) use ($search) {
+                          $query->where('name', 'like', "%{$search}%");
+                      });
+            })
+            ->paginate(10);
+
+        // Pass users and the search query to the view
+        return view('users', compact('users', 'search'));
     }
 
     public function assignRole(Request $request, $userId)
