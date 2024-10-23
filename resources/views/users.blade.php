@@ -7,7 +7,7 @@
     </x-slot>
 
     <div class="min-h-screen flex flex-col items-center justify-center pt-6 sm:pt-0 bg-gray-100">
-        {{-- <h1 class="text-gray-800 text-lg font-bold mt-10">Users List</h1> --}}
+        <h1 class="text-gray-800 text-lg font-bold mt-10">All Users</h1>
 
         <div class="mt-10 px-6 py-4 bg-white dark:bg-gray-800 shadow-md overflow-hidden sm:rounded-lg">
             {{-- Search bar --}}
@@ -45,7 +45,10 @@
                                     <option value="support_staff" {{ $user->hasRole('support_staff') ? 'selected' : '' }}>Support Staff</option>
                                     <option value="super_admin" {{ $user->hasRole('super_admin') ? 'selected' : '' }}>Super Admin</option>
                                 </select>
-                                <button type="submit" class="ml-2 bg-blue-500 text-white px-4 py-2 rounded">Assign</button>
+                                {{-- <button type="submit" class="ml-2 bg-blue-500 text-white px-4 py-2 rounded">Assign</button> --}}
+                                <x-primary-button class="ml-2">
+                                    {{ __('Assign') }}
+                                </x-primary-button>
                             </form>
                         </td>
                     </tr>
