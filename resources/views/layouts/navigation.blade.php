@@ -27,6 +27,13 @@
                     </x-nav-link>
                 </div>
 
+                <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
+                    <x-nav-link :href="route('ticket.myTicketsView')" :active="request()->routeIs('ticket.myTicketsView')">
+                        {{ __('My Tickets') }}
+                    </x-nav-link>
+                </div>
+                
+
                 @hasanyrole('super_admin|support_staff')
                 
                 <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">

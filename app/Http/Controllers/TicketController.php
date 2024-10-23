@@ -2,9 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use App\Models\Ticket;
 use App\Models\Department;
 use Illuminate\Support\Str;
+use App\Mail\TicketApprovalMail;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Requests\StoreTicketRequest;
 use App\Http\Requests\UpdateTicketRequest;
@@ -20,6 +23,7 @@ class TicketController extends Controller
         // $tickets = Ticket::paginate(10); // Paginate tickets, 10 per page
         // Order tickets by priority and creation time
         $tickets = Ticket::with('department') // Eager load the department relationship
+                     ->where('approval_status', 'approved') // Filter for approved tickets
                      ->orderByRaw("FIELD(priority, 'urgent', 'high', 'low')")
                      ->orderBy('created_at', 'desc')
                      ->paginate(10);
@@ -59,7 +63,14 @@ class TicketController extends Controller
             $this->storeAttachment($request, $ticket);
         }
 
-        return redirect(route('ticket.index'));
+         // Get the head of the department
+         $department = Department::find($request->dept_select);
+        $headOfDepartment = $department->headOfDepartment;
+
+        // Send email to the head of department
+         Mail::to($headOfDepartment->email)->send(new TicketApprovalMail($ticket));
+
+        return redirect(route('ticket.myTicketsView'));
     }
 
     /**
@@ -134,4 +145,35 @@ class TicketController extends Controller
             Storage::disk('public')->put($path, $contents);
             $ticket->update(['attachment' => $path]);
     }
+
+    public function approve(Ticket $ticket)
+    {
+    $ticket->update(['approval_status' => 'approved']);
+    
+    // Notify the super admin
+    // $superAdmin = User::role('super_admin')->first();
+    // Mail::to($superAdmin->email)->send(new TicketApprovedMail($ticket));
+
+    return redirect(route('ticket.index'))->with('message', 'Ticket approved and sent to Super Admin.');
+    }
+
+    public function reject(Ticket $ticket)
+    {
+    $ticket->update(['approval_status' => 'rejected']);
+
+    return redirect(route('ticket.index'))->with('message', 'Ticket rejected.');
+    }
+
+    public function myTicketsView()
+    {
+        $tickets = Ticket::where('user_id', auth()->id())
+                    
+                    ->with('department') // Eager load the department relationship
+                    ->orderBy('created_at', 'desc')
+                    ->paginate(10); // Paginate the tickets
+
+         return view('ticket.myTicketsView', compact('tickets'));
+    }
+
+
 }

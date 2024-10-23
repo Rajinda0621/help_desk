@@ -102,6 +102,14 @@ Route::middleware(['role:super_admin'])->group(function () {
     Route::post('departments/assign-head/{department}', [DepartmentController::class, 'assignHead'])->name('departments.assignHead');
 });
 
+// Ticket approval email for HOD
+Route::get('/ticket/approve/{ticket}', [TicketController::class, 'approve'])->name('ticket.approve');
+Route::get('/ticket/reject/{ticket}', [TicketController::class, 'reject'])->name('ticket.reject');
+
+// My tickets route
+Route::get('/my-tickets', [TicketController::class, 'myTicketsView'])->name('ticket.myTicketsView');
+
+
 
 
 require __DIR__.'/auth.php';
