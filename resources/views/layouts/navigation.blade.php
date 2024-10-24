@@ -32,6 +32,16 @@
                         {{ __('My Tickets') }}
                     </x-nav-link>
                 </div>
+
+                @role('head_of_department')
+
+                <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
+                    <x-nav-link :href="route('ticket.approvedTicketsView')" :active="request()->routeIs('ticket.approvedTicketsView')">
+                        {{ __('Approved Tickets') }}
+                    </x-nav-link>
+                </div>
+
+                @endrole
                 
 
                 @hasanyrole('super_admin|support_staff')
@@ -121,6 +131,14 @@
                 {{ __('Create Ticket') }}
             </x-responsive-nav-link>
         </div>
+
+        <div class="pt-2 pb-3 space-y-1">
+            <x-responsive-nav-link :href="route('ticket.myTicketsView')" :active="request()->routeIs('ticket.myTicketsView')">
+                {{ __('My Tickets') }}
+            </x-responsive-nav-link>
+        </div>
+
+        @role('super_admin')
         
         <div class="pt-2 pb-3 space-y-1">
             <x-responsive-nav-link :href="route('ticket.index')" :active="request()->routeIs('ticket.index')">
@@ -133,6 +151,16 @@
                 {{ __('Users') }}
             </x-responsive-nav-link>
         </div>
+
+        <div class="pt-2 pb-3 space-y-1">
+            <x-responsive-nav-link :href="route('departments.index')" :active="request()->routeIs('departments.index')">
+                {{ __('Departments') }}
+            </x-responsive-nav-link>
+        </div>
+
+        @endrole
+
+        
 
         <!-- Responsive Settings Options -->
         <div class="pt-4 pb-1 border-t border-gray-200 dark:border-gray-600">

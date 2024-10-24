@@ -106,8 +106,13 @@ Route::middleware(['role:super_admin'])->group(function () {
 Route::get('/ticket/approve/{ticket}', [TicketController::class, 'approve'])->name('ticket.approve');
 Route::get('/ticket/reject/{ticket}', [TicketController::class, 'reject'])->name('ticket.reject');
 
-// My tickets route
+// My tickets route for USER
 Route::get('/my-tickets', [TicketController::class, 'myTicketsView'])->name('ticket.myTicketsView');
+
+
+// Approved tickets view for HOD
+Route::get('/tickets/approved', [TicketController::class, 'approvedTicketsView'])->name('ticket.approvedTicketsView')->middleware(['auth']);
+
 
 
 

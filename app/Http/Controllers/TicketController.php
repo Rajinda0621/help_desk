@@ -150,11 +150,9 @@ class TicketController extends Controller
     {
     $ticket->update(['approval_status' => 'approved']);
     
-    // Notify the super admin
-    // $superAdmin = User::role('super_admin')->first();
-    // Mail::to($superAdmin->email)->send(new TicketApprovedMail($ticket));
+    
 
-    return redirect(route('ticket.index'))->with('message', 'Ticket approved and sent to Super Admin.');
+    return redirect()->route('ticket.approvedTicketsView')->with('message', 'Ticket approved successfully.');
     }
 
     public function reject(Ticket $ticket)
@@ -174,6 +172,23 @@ class TicketController extends Controller
 
          return view('ticket.myTicketsView', compact('tickets'));
     }
+
+    public function approvedTicketsView()
+    {
+    $tickets = Ticket::where('approval_status', 'approved')
+        ->whereHas('department', function($query) {
+            $query->where('head_of_department_id', auth()->id());
+        })
+        ->with('department') // Eager load the department relationship
+        ->orderBy('created_at', 'desc')
+        ->paginate(10); // Paginate the tickets
+
+    return view('ticket.approvedTicketsView', compact('tickets'));
+    }
+
+
+    
+
 
 
 }
