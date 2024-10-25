@@ -11,53 +11,71 @@
                 <div class="p-6 text-gray-900 dark:text-gray-100">
                     <h3 class="text-2xl font-bold mb-4">Departments List</h3>
 
-                    <a href="{{ route('departments.create') }}" class="bg-blue-500 text-white px-4 py-2 rounded border border-slate-300 hover:border-slate-400 ">+ Add Department</a>
+                    <!-- Button positioned above the table -->
+                    <div class="flex justify-between items-center mb-4">
+                        <a href="{{ route('departments.create') }}" 
+                            class="bg-blue-500 text-white px-4 py-2 rounded border border-slate-300 hover:border-slate-400">
+                            + Add Department
+                        </a>
+                    </div>
 
-                    <table class="min-w-full table-auto mt-4">
-                        <thead>
-                            <tr>
-                                <th class="px-4 py-2">ID</th>
-                                <th class="px-4 py-2">Name</th>
-                                <th class="px-4 py-2">Head of Department</th>
-                                <th class="px-4 py-2">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach ($departments as $department)
+                    <div class="px-6 py-4 bg-white dark:bg-gray-800 shadow-md overflow-hidden sm:rounded-lg">
+                        <!-- Full width table -->
+                        <table class="w-full min-w-full bg-white dark:bg-gray-800">
+                            <thead>
                                 <tr>
-                                    <td class="border px-4 py-2">{{ $department->id }}</td>
-                                    <td class="border px-4 py-2">{{ $department->name }}</td>
-                                    <td class="border px-4 py-2">{{ optional($department->headOfDepartment)->name ?? 'None' }}</td>
-                                    <td class="border px-4 py-2">
-                                        <a href="{{ route('departments.edit', $department->id) }}" class="text-blue-500">Edit</a>
-                                        <form action="{{ route('departments.destroy', $department->id) }}" method="POST" style="display:inline;">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="text-red-500">Delete</button>
-                                        </form>
-
-                                        {{-- Assign Head of Department --}}
-                                        <form action="{{ route('departments.assignHead', $department->id) }}" method="POST" class="mt-2">
-                                            @csrf
-                                            <select name="user_id" class="border rounded p-1 text-black">
-                                                @foreach ($users as $user)
-                                                    <option value="{{ $user->id }}" {{ $department->head_of_department_id == $user->id ? 'selected' : '' }}>
-                                                        {{ $user->name }}
-                                                    </option>
-                                                @endforeach
-                                            </select>
-                                            {{-- <button type="submit" class="ml-2 bg-blue-500 text-white px-4 py-2 rounded">Assign</button> --}}
-                                            <x-primary-button class="ms-3">
-                                                {{ __('Assign') }}
-                                            </x-primary-button>
-                                        </form>
-                                    </td>
+                                    <th class="px-6 py-3 border-b-2 border-gray-300 text-left text-gray-600 dark:text-gray-200">Name</th>
+                                    <th class="px-6 py-3 border-b-2 border-gray-300 text-left text-gray-600 dark:text-gray-200">Head of Department</th>
+                                    <th class="px-6 py-3 border-b-2 border-gray-300 text-left text-gray-600 dark:text-gray-200">Actions</th>
                                 </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody class="bg-white dark:bg-gray-700">
+                                @foreach ($departments as $department)
+                                    <tr>
+                                        <td class="px-6 py-4 border-b border-gray-300 dark:border-gray-600">
+                                            {{ $department->name }}
+                                        </td>
+                                        <td class="px-6 py-4 border-b border-gray-300 dark:border-gray-600">
+                                            {{ optional($department->headOfDepartment)->name ?? 'None' }}
+                                        </td>
+                                        <td class="px-6 py-4 border-b border-gray-300 dark:border-gray-600">
+                                            <a href="{{ route('departments.edit', $department->id) }}" class="text-blue-500 dark:text-yellow-300 hover:underline">Edit</a>
 
-                    
+                                            <form action="{{ route('departments.destroy', $department->id) }}" method="POST" class="inline-block ml-2">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="text-red-500 hover:underline">Delete</button>
+                                            </form>
+
+                                            <form action="{{ route('departments.assignHead', $department->id) }}" method="POST" class="mt-2 inline-block">
+                                                @csrf
+                                                <div class="flex items-center space-x-2 w-full">
+                                                    <select name="user_id" class="border rounded p-1 text-black w-full">
+                                                        @foreach ($users as $user)
+                                                            @if ($user->hasRole('head_of_department'))
+                                                                <option value="{{ $user->id }}" {{ $department->head_of_department_id == $user->id ? 'selected' : '' }} title="{{ $user->name }}">
+                                                                    {{ $user->name }}
+                                                                </option>
+                                                            @endif
+                                                        @endforeach
+                                                    </select>
+                                                
+                                                    <x-primary-button class="ml-2">
+                                                        {{ __('Assign') }}
+                                                    </x-primary-button>
+                                                </div>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+
+                        <!-- Pagination Links -->
+                        <div class="mt-4">
+                            {{ $departments->links() }}
+                        </div>
+                    </div>
 
                 </div>
             </div>

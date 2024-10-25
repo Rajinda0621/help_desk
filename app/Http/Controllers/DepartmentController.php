@@ -13,7 +13,7 @@ class DepartmentController extends Controller
 
     {
         
-        $departments = Department::with('headOfDepartment')->get();
+        $departments = Department::with('headOfDepartment')->paginate(10);
         $users = User::all();
         return view('departments.index', compact('departments','users'));
     }

@@ -60,6 +60,7 @@ Route::get('/email/verify/{id}/{hash}', function (EmailVerificationRequest $requ
 
 
 // resend email verification
+
 Route::post('/email/verification-notification', function (Request $request) {
     $request->user()->sendEmailVerificationNotification();
  
@@ -67,9 +68,6 @@ Route::post('/email/verification-notification', function (Request $request) {
 })->middleware(['auth', 'throttle:6,1'])->name('verification.send');
 
 
-// Route::get('/profile', function () {
-//     // Only verified users may access this route...
-// })->middleware(['auth', 'verified']);
 
 
 
@@ -86,19 +84,36 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
 
 // Users page
-// Route::get('/users', [UserController::class, 'index'])->middleware(['auth', 'verified'])->name('users');
-// Route::get('/users', [UserController::class, 'index'])->middleware(['auth', 'verified'])->name('users');
-Route::middleware(['auth', 'verified'])->group(function () {
+
+// Route::middleware(['auth', 'verified'])->group(function () {
+//     Route::get('/users', [UserController::class, 'index'])->name('users');
+//     Route::post('/users/assign-role/{user}', [UserController::class, 'assignRole'])->name('users.assignRole');
+// });
+
+Route::middleware(['role:super_admin'])->group(function () {
     Route::get('/users', [UserController::class, 'index'])->name('users');
     Route::post('/users/assign-role/{user}', [UserController::class, 'assignRole'])->name('users.assignRole');
 });
 
 
 // Department add/remove
-Route::middleware(['auth', 'verified'])->group(function () {
+Route::middleware(['role:super_admin'])->group(function () {
     Route::resource('departments', DepartmentController::class);
     Route::post('departments/assign-head/{department}', [DepartmentController::class, 'assignHead'])->name('departments.assignHead');
 });
+
+// Ticket approval email for HOD
+Route::get('/ticket/approve/{ticket}', [TicketController::class, 'approve'])->name('ticket.approve');
+Route::get('/ticket/reject/{ticket}', [TicketController::class, 'reject'])->name('ticket.reject');
+
+// My tickets route for USER
+Route::get('/my-tickets', [TicketController::class, 'myTicketsView'])->name('ticket.myTicketsView');
+
+
+// Approved tickets view for HOD
+Route::get('/tickets/approved', [TicketController::class, 'approvedTicketsView'])->name('ticket.approvedTicketsView')->middleware(['auth']);
+
+
 
 
 

@@ -16,8 +16,8 @@ class Ticket extends Model
         'attachment',
         'user_id',
         'department_id',
-        'priority'
-    ];
+        'priority',
+        'approval_status'    ];
 
     public function getPriorityClasses(): string
     {
@@ -34,5 +34,9 @@ class Ticket extends Model
     public function department()
     {   
     return $this->belongsTo(Department::class);
+    }
+    public function user()
+    {
+    return $this->belongsTo(User::class);
     }
 }
