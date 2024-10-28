@@ -13,11 +13,14 @@ class Ticket extends Model
     protected $fillable = [
         'title',
         'description',
+        'status',
         'attachment',
         'user_id',
         'department_id',
         'priority',
-        'approval_status'    ];
+        'approval_status',
+        'required_date',
+        'required_time'    ];
 
     public function getPriorityClasses(): string
     {

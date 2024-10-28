@@ -26,6 +26,9 @@
                                         {{ __('Status') }}
                                     </th>
                                     <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        {{ __('Approval Status') }}
+                                    </th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                         {{ __('Created At') }}
                                     </th>
                                 </tr>
@@ -43,6 +46,9 @@
                                             <span class="{{ $ticket->getPriorityClasses() }}">
                                                 {{ ucfirst($ticket->priority) }}
                                             </span>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            {{ ucfirst($ticket->status) }}
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap">
                                             {{ ucfirst($ticket->approval_status) }}

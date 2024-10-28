@@ -23,11 +23,15 @@
                                         {{ __('Priority') }}
                                     </th>
                                     <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        {{ __('HOD Approval') }}
+                                    </th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                         {{ __('Status') }}
                                     </th>
                                     <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                         {{ __('Created At') }}
                                     </th>
+                                    
                                     <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                         {{ __('Actions') }}
                                     </th>
@@ -49,6 +53,9 @@
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap">
                                             {{ ucfirst($ticket->approval_status) }}
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            {{ ucfirst($ticket->status) }}
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap">
                                             {{ $ticket->created_at->format('d-m-Y') }}

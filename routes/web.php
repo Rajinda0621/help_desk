@@ -72,7 +72,7 @@ Route::post('/email/verification-notification', function (Request $request) {
 
 
 
-
+// Ticket routes
 Route::middleware('auth')->group(function(){
     Route::resource('/ticket',TicketController::class);
 });
@@ -111,7 +111,7 @@ Route::get('/my-tickets', [TicketController::class, 'myTicketsView'])->name('tic
 
 
 // Approved tickets view for HOD
-Route::get('/tickets/approved', [TicketController::class, 'approvedTicketsView'])->name('ticket.approvedTicketsView')->middleware(['auth']);
+Route::get('/tickets/approved', [TicketController::class, 'approvedTicketsView'])->name('ticket.approvedTicketsView')->middleware(['role:head_of_department']);
 
 
 

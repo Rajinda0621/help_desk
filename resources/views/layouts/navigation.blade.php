@@ -16,11 +16,9 @@
                         {{ __('Dashboard') }}
                     </x-nav-link>
                 </div>
-                {{-- <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-                    <x-nav-link :href="route('/ticket/create')" :active="request()->routeIs('ticket/create')">
-                        {{ __('Create Ticket') }}
-                    </x-nav-link>
-                </div> --}}
+                
+                @hasanyrole('user|head_of_department')
+
                 <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
                     <x-nav-link :href="route('ticket.create')" :active="request()->routeIs('ticket.create')">
                         {{ __('Create Ticket') }}
@@ -32,6 +30,7 @@
                         {{ __('My Tickets') }}
                     </x-nav-link>
                 </div>
+                @endhasanyrole
 
                 @role('head_of_department')
 
@@ -44,7 +43,7 @@
                 @endrole
                 
 
-                @hasanyrole('super_admin|support_staff')
+                @role('super_admin')
                 
                 <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
                     <x-nav-link :href="route('ticket.index')" :active="request()->routeIs('ticket.index')">
@@ -52,7 +51,7 @@
                     </x-nav-link>
                 </div>
 
-                @endhasanyrole
+                @endrole
 
                 @role('super_admin')
                 

@@ -4,9 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use App\Models\Ticket;
+use App\Mail\SuperAdminTicketMail;
 use App\Models\Department;
+use App\Enums\TicketStatus;
 use Illuminate\Support\Str;
 use App\Mail\TicketApprovalMail;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Requests\StoreTicketRequest;
@@ -21,7 +24,7 @@ class TicketController extends Controller
     {
         //$tickets = Ticket::all();
         // $tickets = Ticket::paginate(10); // Paginate tickets, 10 per page
-        // Order tickets by priority and creation time
+       
         $tickets = Ticket::with('department') // Eager load the department relationship
                      ->where('approval_status', 'approved') // Filter for approved tickets
                      ->orderByRaw("FIELD(priority, 'urgent', 'high', 'low')")
@@ -45,6 +48,9 @@ class TicketController extends Controller
      */
     public function store(StoreTicketRequest $request)
     {
+
+         $user = Auth::user();
+         $departmentId = $user->department_id;
          $ticket = Ticket::create([
 
     
@@ -52,8 +58,11 @@ class TicketController extends Controller
             'title' => $request->title,
             'description' => $request->description,
             'user_id' => auth()->id(),
-            'department_id' => $request->dept_select, // Save the selected department ID
+            // 'department_id' => $request->dept_select,
+            'department_id' => $departmentId,
             'priority' => $request->priority, // priority level
+            'required_date' => $request->required_date,
+            'required_time' => $request->required_time
             
 
          ]);
@@ -64,7 +73,8 @@ class TicketController extends Controller
         }
 
          // Get the head of the department
-         $department = Department::find($request->dept_select);
+        //  $department = Department::find($request->dept_select);
+        $department = Department::find($departmentId);
         $headOfDepartment = $department->headOfDepartment;
 
         // Send email to the head of department
@@ -148,18 +158,28 @@ class TicketController extends Controller
 
     public function approve(Ticket $ticket)
     {
-    $ticket->update(['approval_status' => 'approved']);
-    
-    
+         $ticket->update(['approval_status' => 'approved']);
 
-    return redirect()->route('ticket.approvedTicketsView')->with('message', 'Ticket approved successfully.');
+         $superAdmin = User::role('super_admin')->first(); // Fetch the first super admin user
+
+        // Check if the super admin exists
+        if ($superAdmin) {
+            // Send email to super admin after approval
+            Mail::to($superAdmin->email)->send(new SuperAdminTicketMail($ticket));
+        } else {
+            // Handle the case when no super admin is found (optional)
+            // For example, you can log this event or show a message
+        }
+         return redirect()->route('ticket.approvedTicketsView')->with('message', 'Ticket approved successfully.');
     }
 
     public function reject(Ticket $ticket)
     {
-    $ticket->update(['approval_status' => 'rejected']);
-
-    return redirect(route('ticket.index'))->with('message', 'Ticket rejected.');
+        $ticket->update([
+            'approval_status' => 'rejected',
+            'status' => TicketStatus::CLOSED->value,
+        ]);
+        return redirect(route('ticket.index'))->with('message', 'Ticket rejected.');
     }
 
     public function myTicketsView()
