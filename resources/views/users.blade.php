@@ -15,14 +15,14 @@
                 <input type="text" name="search" placeholder="Search by name or role"
                        class="border rounded px-4 py-2 w-1/3 text-black"
                        value="{{ request('search') }}">
-                <button type="submit" class="ml-2 bg-blue-500 text-white px-4 py-2 rounded-full border border-slate-300 hover:border-slate-400">Search</button>
+                <button type="submit" class="ml-2 bg-blue-500 text-black dark:text-white px-4 py-2 rounded-full border border-slate-300 hover:border-slate-400">Search</button>
             </form>
 
             {{-- User Table --}}
             <table class="min-w-full bg-white dark:bg-gray-800 mx-auto">
                 <thead>
                     <tr>
-                        <th class="px-6 py-3 border-b-2 border-gray-300 text-left leading-4 text-gray-600 dark:text-gray-200 tracking-wider">ID</th>
+                        {{-- <th class="px-6 py-3 border-b-2 border-gray-300 text-left leading-4 text-gray-600 dark:text-gray-200 tracking-wider">ID</th> --}}
                         <th class="px-6 py-3 border-b-2 border-gray-300 text-left leading-4 text-gray-600 dark:text-gray-200 tracking-wider">Name</th>
                         <th class="px-6 py-3 border-b-2 border-gray-300 text-left leading-4 text-gray-600 dark:text-gray-200 tracking-wider">Email</th>
                         <th class="px-6 py-3 border-b-2 border-gray-300 text-left leading-4 text-gray-600 dark:text-gray-200 tracking-wider">Role</th>
@@ -32,7 +32,7 @@
                 <tbody class="bg-white dark:bg-gray-700">
                     @foreach ($users as $user)
                     <tr>
-                        <td class="px-6 py-4 border-b border-gray-300 dark:border-gray-600">{{ $user->id }}</td>
+                        {{-- <td class="px-6 py-4 border-b border-gray-300 dark:border-gray-600">{{ $user->id }}</td> --}}
                         <td class="px-6 py-4 border-b border-gray-300 dark:border-gray-600">{{ $user->name }}</td>
                         <td class="px-6 py-4 border-b border-gray-300 dark:border-gray-600">{{ $user->email }}</td>
                         <td class="px-6 py-4 border-b border-gray-300 dark:border-gray-600">{{ $user->roles->pluck('name')->implode(', ') }}</td>

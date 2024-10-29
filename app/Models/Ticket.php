@@ -20,7 +20,8 @@ class Ticket extends Model
         'priority',
         'approval_status',
         'required_date',
-        'required_time'    ];
+        'required_time',
+        'support_staff_id'    ];
 
     public function getPriorityClasses(): string
     {
@@ -42,4 +43,10 @@ class Ticket extends Model
     {
     return $this->belongsTo(User::class);
     }
+
+    public function supportStaff()
+    {
+    return $this->belongsTo(User::class, 'support_staff_id');
+    }
+
 }

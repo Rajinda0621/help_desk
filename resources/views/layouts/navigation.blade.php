@@ -41,6 +41,16 @@
                 </div>
 
                 @endrole
+
+                @role('support_staff')
+
+                <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
+                    <x-nav-link :href="route('ticket.assignedTicketsView')" :active="request()->routeIs('ticket.assignedTicketsView')">
+                        {{ __('Assigned Tickets') }}
+                    </x-nav-link>
+                </div>
+
+                @endrole
                 
 
                 @role('super_admin')

@@ -4,13 +4,15 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use App\Models\Ticket;
-use App\Mail\SuperAdminTicketMail;
 use App\Models\Department;
 use App\Enums\TicketStatus;
 use Illuminate\Support\Str;
 use App\Mail\TicketApprovalMail;
+use App\Mail\SuperAdminTicketMail;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
+use App\Mail\SupportStaffAssignedMail;
+use Illuminate\Http\Request; 
 use Illuminate\Support\Facades\Storage;
 use App\Http\Requests\StoreTicketRequest;
 use App\Http\Requests\UpdateTicketRequest;
@@ -30,7 +32,9 @@ class TicketController extends Controller
                      ->orderByRaw("FIELD(priority, 'urgent', 'high', 'low')")
                      ->orderBy('created_at', 'desc')
                      ->paginate(10);
-       return view('ticket.index',compact('tickets'));
+
+        $supportStaffUsers = User::role('support_staff')->get();              
+       return view('ticket.index',compact('tickets','supportStaffUsers'));
     } 
 
     /**
@@ -205,6 +209,45 @@ class TicketController extends Controller
 
     return view('ticket.approvedTicketsView', compact('tickets'));
     }
+
+   public function assignToSupportStaff(Request $request, Ticket $ticket)
+    {
+    // Ensure only super admin can access this
+    if (Auth::user()->hasRole('super_admin')) {
+        // Use the injected Request object to get the input
+        $supportStaffId = $request->input('support_staff_id');
+        $supportStaff = User::find($supportStaffId);
+
+        // Check if the support staff exists
+        if ($supportStaff) {
+            // Assign the ticket to support staff
+            $ticket->support_staff_id = $supportStaff->id; // Add 'support_staff_id' to tickets table
+            // $ticket->status = 'assigned'; // Optional: update status
+            $ticket->save();
+
+            // Send notification email to support staff
+            Mail::to($supportStaff->email)->send(new SupportStaffAssignedMail($ticket, $supportStaff));
+
+            return back()->with('success', 'Ticket successfully assigned to support staff.');
+        } else {
+            return back()->with('error', 'Support staff not found.');
+        }
+    } else {
+        abort(403, 'Unauthorized action.');
+    }
+    }
+
+    public function assignedTicketsView()
+{
+    // Fetch tickets assigned to the logged-in support staff
+    $tickets = Ticket::where('support_staff_id', auth()->id())
+                    ->with('department') // Eager load the department relationship
+                    ->orderBy('created_at', 'desc')
+                    ->paginate(10); // Paginate the tickets
+
+    return view('ticket.assignedTicketsView', compact('tickets'));
+}
+
 
 
     
