@@ -238,7 +238,7 @@ class TicketController extends Controller
     }
 
     public function assignedTicketsView()
-{
+    {
     // Fetch tickets assigned to the logged-in support staff
     $tickets = Ticket::where('support_staff_id', auth()->id())
                     ->with('department') // Eager load the department relationship
@@ -246,7 +246,16 @@ class TicketController extends Controller
                     ->paginate(10); // Paginate the tickets
 
     return view('ticket.assignedTicketsView', compact('tickets'));
-}
+    }
+
+    public function resolve(Request $request, Ticket $ticket)
+    {
+    $request->validate(['status' => 'required|in:open,resolved,closed']);
+    $ticket->update(['status' => $request->status]);
+
+    return redirect()->route('ticket.show', $ticket)->with('message', 'Ticket status updated successfully.');
+    }
+
 
 
 

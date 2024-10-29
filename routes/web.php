@@ -122,6 +122,11 @@ Route::middleware(['auth', 'role:support_staff'])->group(function () {
     Route::get('/tickets/assigned', [TicketController::class, 'assignedTicketsView'])->name('ticket.assignedTicketsView');
 });
 
+// Route for updating ticket status
+Route::put('/ticket/{ticket}/resolve', [TicketController::class, 'resolve'])->name('ticket.resolve');
+
+
+
 
 
 
