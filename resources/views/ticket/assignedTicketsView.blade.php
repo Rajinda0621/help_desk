@@ -1,7 +1,7 @@
 <x-app-layout>
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
-            {{ __('My Tickets') }}
+            {{ __('Assigned Tickets') }}
         </h2>
     </x-slot>
 
@@ -23,25 +23,31 @@
                                         {{ __('Priority') }}
                                     </th>
                                     <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        {{ __('HOD Approval') }}
-                                    </th>
-                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                         {{ __('Status') }}
                                     </th>
                                     <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                         {{ __('Created At') }}
                                     </th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        {{ __('Approval Status') }}
+                                    </th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        {{ __('Required Date') }}
+                                    </th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        {{ __('Required Time') }}
+                                    </th>
                                     
-                                    {{-- <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        {{ __('Actions') }}
-                                    </th> --}}
                                 </tr>
                             </thead>
                             <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200">
                                 @foreach($tickets as $ticket)
                                     <tr>
-                                        <td class="px-6 py-4 whitespace-nowrap">
+                                        {{-- <td class="px-6 py-4 whitespace-nowrap">
                                             {{ $ticket->title }}
+                                        </td> --}}
+                                        <td class="px-6 py-4 border-b border-gray-300 dark:border-gray-600">
+                                            <a href="{{ route('ticket.show', $ticket->id) }}" class="text-blue-500 dark:text-yellow-300 hover:underline">{{ $ticket->title }}</a>
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap">
                                             {{ $ticket->department->name ?? 'N/A' }}
@@ -52,19 +58,20 @@
                                             </span>
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap">
-                                            {{ ucfirst($ticket->approval_status) }}
-                                        </td>
-                                        <td class="px-6 py-4 whitespace-nowrap">
                                             {{ ucfirst($ticket->status) }}
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap">
-                                            {{ $ticket->created_at->format('d-m-Y') }}
+                                            {{ $ticket->created_at->format('y-m-d') }}
                                         </td>
-                                        {{-- <td class="px-6 py-4 whitespace-nowrap">
-                                            <a href="{{ route('ticket.show', $ticket) }}" class="text-indigo-600 dark:text-indigo-400 hover:text-indigo-900">
-                                                {{ __('View') }}
-                                            </a>
-                                        </td> --}}
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            {{ ucfirst($ticket->approval_status) }}
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            {{ $ticket->required_date}}
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            {{ $ticket->required_time}}
+                                        </td>
                                     </tr>
                                 @endforeach
                             </tbody>
@@ -76,7 +83,7 @@
                         </div>
                     @else
                         <div class="text-center py-6">
-                            <p class="text-lg font-semibold text-gray-500 dark:text-gray-400">{{ __('No tickets found.') }}</p>
+                            <p class="text-lg font-semibold text-gray-500 dark:text-gray-400">{{ __('No assigned tickets found.') }}</p>
                         </div>
                     @endif
                 </div>

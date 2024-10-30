@@ -1,24 +1,9 @@
-{{-- <p>Dear {{ optional($ticket->department->headOfDepartment)->name }},</p>
-
-<p>A new ticket has been created by {{ optional($ticket->user)->name }} and requires your approval.</p>
-
-<p><strong>Title:</strong> {{ $ticket->title }}</p>
-<p><strong>Description:</strong> {{ $ticket->description }}</p>
-<p><strong>Priority:</strong> {{ $ticket->priority }}</p>
-
-<p>Please click the link below to approve or reject the ticket:</p>
-
-<p>
-    <a href="{{ route('ticket.approve', $ticket->id) }}">Approve</a> | 
-    <a href="{{ route('ticket.reject', $ticket->id) }}">Reject</a>
-</p> --}}
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ticket Approval Request</title>
+    <title>New Approved Ticket Notification</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -41,6 +26,9 @@
             background-color: #f9f9f9;
             margin-top: 20px;
         }
+        .approve {
+            background-color: #4CAF50;
+        }
         .button {
             display: inline-block;
             padding: 10px 15px;
@@ -52,12 +40,6 @@
             border: none;
             cursor: pointer;
         }
-        .approve {
-            background-color: #4CAF50; /* Green for approve */
-        }
-        .reject {
-            background-color: #f44336; /* Red for reject */
-        }
         .footer {
             margin-top: 20px;
             font-size: 0.9em;
@@ -67,26 +49,27 @@
 </head>
 <body>
     <div class="header">
-        <h2>Ticket Approval Required</h2>
+        <h2>New Ticket Notification</h2>
     </div>
     <div class="content">
-        <p>Dear {{ optional($ticket->department->headOfDepartment)->name }},</p>
+        <p>Dear Super Admin,</p>
 
-        <p>A new ticket has been created by {{ optional($ticket->user)->name }} and requires your approval.</p>
+        <p>A ticket has been approved by the Head of Department of {{$ticket->department->name }}.</p>
 
         <p><strong>Title:</strong> {{ $ticket->title }}</p>
         <p><strong>Description:</strong> {{ $ticket->description }}</p>
+        <p><strong>Department:</strong> {{ $ticket->department->name }}</p>
         <p><strong>Priority:</strong> {{ $ticket->priority }}</p>
+        <p><strong>Required Date:</strong> {{ $ticket->required_date }}</p>
+        <p><strong>Required Time:</strong> {{ $ticket->required_time }}</p>
+        <p><strong>Created By:</strong> {{ optional($ticket->user)->name }}</p>
 
-        <p>Please click the buttons below to approve or reject the ticket:</p>
+        <a href="{{ route('ticket.index', $ticket->id) }}" class="button approve">Assign Staff</a>
 
-        <a href="{{ route('ticket.approve', $ticket->id) }}" class="button approve">Approve</a>
-        <a href="{{ route('ticket.reject', $ticket->id) }}" class="button reject">Reject</a>
+        <p>Thank you for your attention!</p>
     </div>
     <div class="footer">
-        <p>Thank you for your attention!</p>
         <p>Helpdesk System - Raigam IT Department</p>
     </div>
 </body>
 </html>
-

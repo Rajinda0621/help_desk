@@ -72,7 +72,7 @@ Route::post('/email/verification-notification', function (Request $request) {
 
 
 
-
+// Ticket routes
 Route::middleware('auth')->group(function(){
     Route::resource('/ticket',TicketController::class);
 });
@@ -111,7 +111,21 @@ Route::get('/my-tickets', [TicketController::class, 'myTicketsView'])->name('tic
 
 
 // Approved tickets view for HOD
-Route::get('/tickets/approved', [TicketController::class, 'approvedTicketsView'])->name('ticket.approvedTicketsView')->middleware(['auth']);
+Route::get('/tickets/approved', [TicketController::class, 'approvedTicketsView'])->name('ticket.approvedTicketsView')->middleware(['role:head_of_department']);
+
+// Route for assigning tickets for users
+Route::post('/ticket/assign/{ticket}', [TicketController::class, 'assignToSupportStaff'])->name('ticket.assign');
+ 
+
+// Assigned tickets view for Support staff
+Route::middleware(['auth', 'role:support_staff'])->group(function () {
+    Route::get('/tickets/assigned', [TicketController::class, 'assignedTicketsView'])->name('ticket.assignedTicketsView');
+});
+
+// Route for updating ticket status
+Route::put('/ticket/{ticket}/resolve', [TicketController::class, 'resolve'])->name('ticket.resolve');
+
+
 
 
 

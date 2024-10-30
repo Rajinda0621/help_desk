@@ -14,7 +14,7 @@
                     <!-- Button positioned above the table -->
                     <div class="flex justify-between items-center mb-4">
                         <a href="{{ route('departments.create') }}" 
-                            class="bg-blue-500 text-white px-4 py-2 rounded border border-slate-300 hover:border-slate-400">
+                            class="bg-blue-500 text-black  dark:text-white px-4 py-2 rounded border border-slate-300 hover:border-slate-400">
                             + Add Department
                         </a>
                     </div>

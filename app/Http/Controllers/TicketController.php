@@ -5,9 +5,15 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use App\Models\Ticket;
 use App\Models\Department;
+use App\Enums\TicketStatus;
 use Illuminate\Support\Str;
+use Illuminate\Http\Request; 
+use App\Mail\ResolvedTicketMail;
 use App\Mail\TicketApprovalMail;
+use App\Mail\SuperAdminTicketMail;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
+use App\Mail\SupportStaffAssignedMail;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Requests\StoreTicketRequest;
 use App\Http\Requests\UpdateTicketRequest;
@@ -21,13 +27,15 @@ class TicketController extends Controller
     {
         //$tickets = Ticket::all();
         // $tickets = Ticket::paginate(10); // Paginate tickets, 10 per page
-        // Order tickets by priority and creation time
+       
         $tickets = Ticket::with('department') // Eager load the department relationship
                      ->where('approval_status', 'approved') // Filter for approved tickets
                      ->orderByRaw("FIELD(priority, 'urgent', 'high', 'low')")
                      ->orderBy('created_at', 'desc')
                      ->paginate(10);
-       return view('ticket.index',compact('tickets'));
+
+        $supportStaffUsers = User::role('support_staff')->get();              
+       return view('ticket.index',compact('tickets','supportStaffUsers'));
     } 
 
     /**
@@ -45,6 +53,9 @@ class TicketController extends Controller
      */
     public function store(StoreTicketRequest $request)
     {
+
+         $user = Auth::user();
+         $departmentId = $user->department_id;
          $ticket = Ticket::create([
 
     
@@ -52,8 +63,11 @@ class TicketController extends Controller
             'title' => $request->title,
             'description' => $request->description,
             'user_id' => auth()->id(),
-            'department_id' => $request->dept_select, // Save the selected department ID
+            // 'department_id' => $request->dept_select,
+            'department_id' => $departmentId,
             'priority' => $request->priority, // priority level
+            'required_date' => $request->required_date,
+            'required_time' => $request->required_time
             
 
          ]);
@@ -64,7 +78,8 @@ class TicketController extends Controller
         }
 
          // Get the head of the department
-         $department = Department::find($request->dept_select);
+        //  $department = Department::find($request->dept_select);
+        $department = Department::find($departmentId);
         $headOfDepartment = $department->headOfDepartment;
 
         // Send email to the head of department
@@ -148,18 +163,28 @@ class TicketController extends Controller
 
     public function approve(Ticket $ticket)
     {
-    $ticket->update(['approval_status' => 'approved']);
-    
-    
+         $ticket->update(['approval_status' => 'approved']);
 
-    return redirect()->route('ticket.approvedTicketsView')->with('message', 'Ticket approved successfully.');
+         $superAdmin = User::role('super_admin')->first(); // Fetch the first super admin user
+
+        // Check if the super admin exists
+        if ($superAdmin) {
+            // Send email to super admin after approval
+            Mail::to($superAdmin->email)->send(new SuperAdminTicketMail($ticket));
+        } else {
+            
+            
+        }
+         return redirect()->route('ticket.approvedTicketsView')->with('message', 'Ticket approved successfully.');
     }
 
     public function reject(Ticket $ticket)
     {
-    $ticket->update(['approval_status' => 'rejected']);
-
-    return redirect(route('ticket.index'))->with('message', 'Ticket rejected.');
+        $ticket->update([
+            'approval_status' => 'rejected',
+            'status' => TicketStatus::CLOSED->value,
+        ]);
+        return redirect(route('ticket.index'))->with('message', 'Ticket rejected.');
     }
 
     public function myTicketsView()
@@ -185,6 +210,58 @@ class TicketController extends Controller
 
     return view('ticket.approvedTicketsView', compact('tickets'));
     }
+
+   public function assignToSupportStaff(Request $request, Ticket $ticket)
+    {
+    // Ensure only super admin can access this
+    if (Auth::user()->hasRole('super_admin')) {
+        // Use the injected Request object to get the input
+        $supportStaffId = $request->input('support_staff_id');
+        $supportStaff = User::find($supportStaffId);
+
+        // Check if the support staff exists
+        if ($supportStaff) {
+            // Assign the ticket to support staff
+            $ticket->support_staff_id = $supportStaff->id; // Add 'support_staff_id' to tickets table
+            // $ticket->status = 'assigned'; 
+            $ticket->save();
+
+            // Send notification email to support staff
+            Mail::to($supportStaff->email)->send(new SupportStaffAssignedMail($ticket, $supportStaff));
+
+            return back()->with('success', 'Ticket successfully assigned to support staff.');
+        } else {
+            return back()->with('error', 'Support staff not found.');
+        }
+    } else {
+        abort(403, 'Unauthorized action.');
+    }
+    }
+
+    public function assignedTicketsView()
+    {
+    // Fetch tickets assigned to the logged-in support staff
+        $tickets = Ticket::where('support_staff_id', auth()->id())
+                        ->with('department') // Eager load the department relationship
+                        ->orderBy('created_at', 'desc')
+                        ->paginate(10); // Paginate the tickets
+
+        return view('ticket.assignedTicketsView', compact('tickets'));
+    }
+
+    public function resolve(Request $request, Ticket $ticket)
+    {
+        $request->validate(['status' => 'required|in:open,resolved,closed']);
+        $ticket->update(['status' => $request->status]);
+
+        if ($request->status === 'resolved') {
+            Mail::to($ticket->user->email)->send(new ResolvedTicketMail($ticket));
+        }
+
+        return redirect()->route('ticket.show', $ticket)->with('message', 'Ticket status updated successfully.');
+    }
+
+
 
 
     
