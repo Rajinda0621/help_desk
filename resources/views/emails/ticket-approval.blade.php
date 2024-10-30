@@ -85,6 +85,7 @@
     </div>
     <div class="footer">
         <p>Thank you for your attention!</p>
+        <p>Helpdesk System - Raigam IT Department</p>
     </div>
 </body>
 </html>

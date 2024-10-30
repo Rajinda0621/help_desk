@@ -7,12 +7,13 @@ use App\Models\Ticket;
 use App\Models\Department;
 use App\Enums\TicketStatus;
 use Illuminate\Support\Str;
+use Illuminate\Http\Request; 
+use App\Mail\ResolvedTicketMail;
 use App\Mail\TicketApprovalMail;
 use App\Mail\SuperAdminTicketMail;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\SupportStaffAssignedMail;
-use Illuminate\Http\Request; 
 use Illuminate\Support\Facades\Storage;
 use App\Http\Requests\StoreTicketRequest;
 use App\Http\Requests\UpdateTicketRequest;
@@ -171,8 +172,8 @@ class TicketController extends Controller
             // Send email to super admin after approval
             Mail::to($superAdmin->email)->send(new SuperAdminTicketMail($ticket));
         } else {
-            // Handle the case when no super admin is found (optional)
-            // For example, you can log this event or show a message
+            
+            
         }
          return redirect()->route('ticket.approvedTicketsView')->with('message', 'Ticket approved successfully.');
     }
@@ -222,7 +223,7 @@ class TicketController extends Controller
         if ($supportStaff) {
             // Assign the ticket to support staff
             $ticket->support_staff_id = $supportStaff->id; // Add 'support_staff_id' to tickets table
-            // $ticket->status = 'assigned'; // Optional: update status
+            // $ticket->status = 'assigned'; 
             $ticket->save();
 
             // Send notification email to support staff
@@ -240,20 +241,24 @@ class TicketController extends Controller
     public function assignedTicketsView()
     {
     // Fetch tickets assigned to the logged-in support staff
-    $tickets = Ticket::where('support_staff_id', auth()->id())
-                    ->with('department') // Eager load the department relationship
-                    ->orderBy('created_at', 'desc')
-                    ->paginate(10); // Paginate the tickets
+        $tickets = Ticket::where('support_staff_id', auth()->id())
+                        ->with('department') // Eager load the department relationship
+                        ->orderBy('created_at', 'desc')
+                        ->paginate(10); // Paginate the tickets
 
-    return view('ticket.assignedTicketsView', compact('tickets'));
+        return view('ticket.assignedTicketsView', compact('tickets'));
     }
 
     public function resolve(Request $request, Ticket $ticket)
     {
-    $request->validate(['status' => 'required|in:open,resolved,closed']);
-    $ticket->update(['status' => $request->status]);
+        $request->validate(['status' => 'required|in:open,resolved,closed']);
+        $ticket->update(['status' => $request->status]);
 
-    return redirect()->route('ticket.show', $ticket)->with('message', 'Ticket status updated successfully.');
+        if ($request->status === 'resolved') {
+            Mail::to($ticket->user->email)->send(new ResolvedTicketMail($ticket));
+        }
+
+        return redirect()->route('ticket.show', $ticket)->with('message', 'Ticket status updated successfully.');
     }
 
 

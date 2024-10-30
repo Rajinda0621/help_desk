@@ -32,9 +32,9 @@
                                         {{ __('Created At') }}
                                     </th>
                                     
-                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    {{-- <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                         {{ __('Actions') }}
-                                    </th>
+                                    </th> --}}
                                 </tr>
                             </thead>
                             <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200">
@@ -60,11 +60,11 @@
                                         <td class="px-6 py-4 whitespace-nowrap">
                                             {{ $ticket->created_at->format('d-m-Y') }}
                                         </td>
-                                        <td class="px-6 py-4 whitespace-nowrap">
+                                        {{-- <td class="px-6 py-4 whitespace-nowrap">
                                             <a href="{{ route('ticket.show', $ticket) }}" class="text-indigo-600 dark:text-indigo-400 hover:text-indigo-900">
                                                 {{ __('View') }}
                                             </a>
-                                        </td>
+                                        </td> --}}
                                     </tr>
                                 @endforeach
                             </tbody>

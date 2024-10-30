@@ -94,7 +94,7 @@
                         </select>
                         <x-primary-button type="button" x-on:click="open = true">Update</x-primary-button>
 
-                        
+                         
                         <div x-show="open" class="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50" x-cloak>
                             <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-xl max-w-md w-full">
                                 <h2 class="text-lg font-semibold text-gray-700 dark:text-gray-300 mb-4">Confirm Resolution</h2>

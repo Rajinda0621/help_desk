@@ -27,7 +27,18 @@
             margin-top: 20px;
         }
         .approve {
-            background-color: #4CAF50; /* Green for approve */
+            background-color: #4CAF50;
+        }
+        .button {
+            display: inline-block;
+            padding: 10px 15px;
+            margin: 10px 5px;
+            border-radius: 5px;
+            text-decoration: none;
+            color: white;
+            font-weight: bold;
+            border: none;
+            cursor: pointer;
         }
         .footer {
             margin-top: 20px;
@@ -43,7 +54,7 @@
     <div class="content">
         <p>Dear Super Admin,</p>
 
-        <p>A ticket has been approved by the Head of Department.</p>
+        <p>A ticket has been approved by the Head of Department of {{$ticket->department->name }}.</p>
 
         <p><strong>Title:</strong> {{ $ticket->title }}</p>
         <p><strong>Description:</strong> {{ $ticket->description }}</p>
@@ -58,7 +69,7 @@
         <p>Thank you for your attention!</p>
     </div>
     <div class="footer">
-        <p>Raigam IT Department Helpdesk System</p>
+        <p>Helpdesk System - Raigam IT Department</p>
     </div>
 </body>
 </html>
